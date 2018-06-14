@@ -62,25 +62,50 @@ install-package Swashbuckle.AspNetCore
 
 MailKit can be used for mailing, Swashbuckle.AspNetCore for Swagger, Serilog for logging. Here we are logging to MongoDB, too.
 
-4.should you want to configure logging or other services, do it in `Program.cs`. Usually, the default configuration already does all what is typically required. See <https://joonasw.net/view/aspnet-core-2-configuration-changes>. E.g. to configure logging with Serilog: 
+4.should you want to configure logging or other services, do it in `Program.cs`. Usually, the default configuration already does all what is typically required. See <https://joonasw.net/view/aspnet-core-2-configuration-changes>. E.g. to configure logging with Serilog:
 
 ```cs
-// see http://www.carlrippon.com/?p=1118
-IConfiguration configuration = new ConfigurationBuilder()
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .AddJsonFile(
-        $"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json",
-        optional: true)
-    .Build();
+public static void Main(string[] args)
+{
+    // see http://www.carlrippon.com/?p=1118
+    IConfiguration configuration = new ConfigurationBuilder()
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        .AddJsonFile(
+            $"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json",
+            optional: true)
+        .Build();
 
-// https://github.com/serilog/serilog-aspnetcore
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-    .Enrich.FromLogContext()
-    .WriteTo.MongoDBCapped(configuration["Serilog:ConnectionString"])
-    .CreateLogger();
+    // https://github.com/serilog/serilog-aspnetcore
+    string maxSize = configuration["Serilog:MaxMbSize"];
+    Log.Logger = new LoggerConfiguration()
+        .MinimumLevel.Debug()
+        .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+        .Enrich.FromLogContext()
+        .WriteTo.MongoDBCapped(configuration["Serilog:ConnectionString"],
+            ParseLogLevel(configuration["Serilog:MinLevel"], LogEventLevel.Information),
+            !String.IsNullOrEmpty(maxSize) && Int32.TryParse(maxSize, out int n) && n > 0 ? n : 10)
+        .CreateLogger();
+
+    BuildWebHost(args).Run();
+}
+
+public static IWebHost BuildWebHost(string[] args)
+{
+    // https://joonasw.net/view/aspnet-core-2-configuration-changes
+
+    return WebHost.CreateDefaultBuilder(args)
+        .UseStartup<Startup>()
+        .Build();
+}
+
+private static LogEventLevel ParseLogLevel(string text, LogEventLevel @default)
+{
+    if (String.IsNullOrEmpty(text) ||
+        Array.IndexOf(new[] { "verbose", "debug", "information", "warning", "error", "fatal" },
+        text.ToLowerInvariant()) == -1) return @default;
+    return Enum.Parse<LogEventLevel>(text, true);
+}
 ```
 
 5.under `Models`, add identity models (`ApplicationUser`, `ApplicationRole`).
