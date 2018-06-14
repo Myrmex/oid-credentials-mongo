@@ -1,6 +1,6 @@
 ﻿# OpenIdDict Credentials Flow for WebAPI
 
-AspNet Core 2.1 - OpenIdDict 2.0.0-rc3-1006 - MongoDB
+AspNet Core 2.1 - OpenIdDict 2.0.0-rc3-1006 - MongoDB (see `oid-credentials` for SQL-based database)
 
 ## References
 
