@@ -49,7 +49,7 @@ Authorization: Bearer ...
 3.ensure that you have these packages in the project (you can list them using a NuGet command like `get-package | Format-Table -AutoSize` in the NuGet console):
 
 ```
-install-package AspNetCore.Identity.MongoDbCore -pre
+install-package AspNetCore.Identity.MongoDbCore
 install-package AspNet.Security.OAuth.Validation -pre
 install-package OpenIddict -pre
 install-package OpenIddict.MongoDB -pre
