@@ -50,7 +50,7 @@ Authorization: Bearer ...
 
 ```
 install-package AspNetCore.Identity.MongoDbCore
-install-package AspNet.Security.OAuth.Validation -pre
+install-package AspNet.Security.OAuth.Validation
 install-package OpenIddict -pre
 install-package OpenIddict.MongoDB -pre
 install-package OpenIddict.Mvc -pre
