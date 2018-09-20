@@ -1,6 +1,6 @@
 ﻿# OpenIdDict Credentials Flow for WebAPI
 
-AspNet Core 2.1.3 - OpenIdDict 2.0.0-rtm-1090 - MongoDB (see <https://github.com/Myrmex/oid-credentials> for SQL-based database)
+AspNet Core 2.1.4 - OpenIdDict 2.0.0-rtm-1114 - MongoDB (see <https://github.com/Myrmex/oid-credentials> for SQL-based database)
 
 To use a Docker container for MongoDB, rather than installing a local copy:
 
